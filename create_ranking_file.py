@@ -74,7 +74,14 @@ def main():
                 res = json.loads(res.text)
 
                 if res['Items']:
+                    # mediumImageUrls, smallImageUrlsを展開
                     df = pd.DataFrame(res['Items'])
+                    mediumImageUrls = df['mediumImageUrls']
+                    df['mediumImageUrl0'] = mediumImageUrls.transform(lambda x : x[0] if len(x) > 0 else '')
+                    df['mediumImageUrl1'] = mediumImageUrls.transform(lambda x : x[1] if len(x) > 1 else '')
+                    smallImageUrls = df['smallImageUrls']
+                    df['smallImageUrl0'] = smallImageUrls.transform(lambda x : x[0] if len(x) > 0 else '')
+                    df['smallImageUrl1'] = smallImageUrls.transform(lambda x : x[1] if len(x) > 1 else '')
                     #dfをシートへ出力
                     tmp_genre = is_suitble_sheet_name(re_check_name,c_genre_info['genre_name'])
                     with pd.ExcelWriter(path_output_file, mode='a') as writer:
