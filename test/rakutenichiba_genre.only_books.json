@@ -1,0 +1,24 @@
+{
+  "200162": {
+    "genre_name": "本・雑誌・コミック",
+    "genre_level": 1,
+    "children": {
+      "101257": {
+        "genre_name": "写真集",
+        "genre_level": 2
+      },
+      "200450": {
+        "genre_name": "古書・希少本",
+        "genre_level": 2
+      },
+      "101254": {
+        "genre_name": "楽譜",
+        "genre_level": 2
+      },
+      "101302": {
+        "genre_name": "雑誌",
+        "genre_level": 2
+      }
+    }
+  }
+}
