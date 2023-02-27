@@ -63,29 +63,53 @@ def main():
             print(f"子ジャンル情報 --> {c_genre_info}")
             
             req_params['genreId'] = c_genre_id
-            res = requests.get(REQ_URL,params=req_params)
-            time.sleep(0.01)
 
-            if res.status_code != 200:
-                print(f"error --> {res.status_code}")
-            else:                
-                
+            # エラーかレコードが取得できなくなるまで、最大100件取得する
+            page = 1
+            retrieved = 0
+            max_rows = 100
+            while retrieved < max_rows:
+                req_params['page'] = page
+                time.sleep(1) #1つのapplication_idにつき、1秒に1回以下のリクエストとしてください。
+                res = requests.get(REQ_URL,params=req_params)
+                #エラーで打ち切り
+                if res.status_code != 200:
+                    print(f"error --> status_code={res.status_code}, response={res.text}")
+                    break
+                #空レスポンスで打ち切り
+                res_json = json.loads(res.text)
+                if not res_json['Items']:
+                    if retrieved == 0:
+                        print(f"error --> response is empty, response={res.text}")
+                        df = pd.DataFrame({'エラー':['ランキングが空です'],
+                                          '詳細': res.text})
+                        retrieved = len(df)
+                    break
                 #レスポンスをdf化
-                res = json.loads(res.text)
+                if retrieved == 0:
+                    df = pd.DataFrame(res_json['Items'])
+                else:
+                    df = pd.concat([df, pd.DataFrame(res_json['Items'])])
+                retrieved = len(df)
+                page = page + 1
 
-                if res['Items']:
-                    # mediumImageUrls, smallImageUrlsを展開
-                    df = pd.DataFrame(res['Items'])
+            if retrieved > 0:
+                # max_rows以降は切り捨て
+                df = df.head(max_rows)
+                # mediumImageUrlsを展開
+                if 'mediumImageUrls' in df.columns:
                     mediumImageUrls = df['mediumImageUrls']
                     df['mediumImageUrl0'] = mediumImageUrls.transform(lambda x : x[0] if len(x) > 0 else '')
                     df['mediumImageUrl1'] = mediumImageUrls.transform(lambda x : x[1] if len(x) > 1 else '')
+                # smallImageUrlsを展開
+                if 'smallImageUrls' in df.columns:
                     smallImageUrls = df['smallImageUrls']
                     df['smallImageUrl0'] = smallImageUrls.transform(lambda x : x[0] if len(x) > 0 else '')
                     df['smallImageUrl1'] = smallImageUrls.transform(lambda x : x[1] if len(x) > 1 else '')
-                    #dfをシートへ出力
-                    tmp_genre = is_suitble_sheet_name(re_check_name,c_genre_info['genre_name'])
-                    with pd.ExcelWriter(path_output_file, mode='a') as writer:
-                        df.to_excel(writer, sheet_name=tmp_genre,index=False)
+                #dfをシートへ出力
+                tmp_genre = is_suitble_sheet_name(re_check_name,c_genre_info['genre_name'])
+                with pd.ExcelWriter(path_output_file, mode='a') as writer:
+                    df.to_excel(writer, sheet_name=tmp_genre,index=False)
         
         #初期シート削除
         wb = openpyxl.load_workbook(path_output_file)
