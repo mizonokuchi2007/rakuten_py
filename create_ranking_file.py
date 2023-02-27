@@ -96,6 +96,11 @@ def main():
             if retrieved > 0:
                 # max_rows以降は切り捨て
                 df = df.head(max_rows)
+                # ランキング対象ジャンルを追加
+                if 'rank' in df.columns:
+                    df['genreOfRank'] = c_genre_id
+                # ランキング取得日時を追加
+                df['retrieved'] = datetime.datetime.now()
                 # mediumImageUrlsを展開
                 if 'mediumImageUrls' in df.columns:
                     mediumImageUrls = df['mediumImageUrls']
