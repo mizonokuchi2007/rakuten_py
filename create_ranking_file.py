@@ -19,6 +19,7 @@ this_date = format(sta_time,'%Y%m%d')
 path_output_dir = f'.\output\{this_date}'
 req_params = {
     'applicationId':CLIENT_ME['APPLICATION_ID'],
+    'affiliateId': CLIENT_ME['AFF_ID'],
     'format':'json',
     'formatVersion':'2',
     'genreId':'',
@@ -73,7 +74,7 @@ def main():
                 res = json.loads(res.text)
 
                 if res['Items']:
-                    df = pd.DataFrame(res['Items'])[WANT_ITEMS]
+                    df = pd.DataFrame(res['Items'])
                     #dfをシートへ出力
                     tmp_genre = is_suitble_sheet_name(re_check_name,c_genre_info['genre_name'])
                     with pd.ExcelWriter(path_output_file, mode='a') as writer:
