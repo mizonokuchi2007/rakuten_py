@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+# coding: utf-8
 import datetime
 import requests
 import time
 import json
+import os
 from config import CLIENT_ME
 #config.py:
 #CLIENT_ME = {
@@ -66,7 +69,7 @@ def get_genreId():
         cnt_p += 1
     
     ##json形式で本ファイルの直下に保存
-    path = r'.\rakutenichiba_genre.json'
+    path = os.path.join(os.path.dirname(__file__), r'rakutenichiba_genre.json')
     with open(path,encoding='utf-8',mode='w') as f:
         json.dump(dict_p_genre,f,ensure_ascii=False,indent=2)
     

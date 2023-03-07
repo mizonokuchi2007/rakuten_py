@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+# coding: utf-8
 import pandas as pd
 import os,re,json,datetime,requests,openpyxl,time
 from config import CLIENT_ME
 import get_genreId
 
 REQ_URL = 'https://app.rakuten.co.jp/services/api/IchibaItem/Ranking/20170628'
-PATH_GENRE = r'.\rakutenichiba_genre.json'
-PATH_OUTPUT = '.\output'
+PATH_GENRE = os.path.join(os.path.dirname(__file__), r'rakutenichiba_genre.json')
+PATH_OUTPUT = os.path.join(os.path.dirname(__file__), r'output')
 RE_PATTRN_CHACK_NAME = r'(:|\\|\?|\[|\]|\/|\*)'
 WANT_ITEMS = [
     'genreId','rank','itemCode',
@@ -16,7 +18,7 @@ WANT_ITEMS = [
 
 sta_time = datetime.datetime.today()
 this_date = format(sta_time,'%Y%m%d')
-path_output_dir = f'.\output\{this_date}'
+path_output_dir = os.path.join(PATH_OUTPUT, f'{this_date}')
 req_params = {
     'applicationId':CLIENT_ME['APPLICATION_ID'],
     'affiliateId': CLIENT_ME['AFF_ID'],
@@ -52,7 +54,7 @@ def main():
         print(f"親ジャンル名 --> {p_genre_info['genre_name']}\n#####")
 
         #ランキングファイル作成
-        path_output_file = f"{path_output_dir}\{p_genre_id}_{p_genre_info['genre_name']}.xlsx"
+        path_output_file = os.path.join(f"{path_output_dir}", f"{p_genre_id}_{p_genre_info['genre_name']}.xlsx")
         wb = openpyxl.Workbook()
         wb.save(path_output_file)        
 
